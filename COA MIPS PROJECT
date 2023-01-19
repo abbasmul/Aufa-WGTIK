@@ -1,0 +1,111 @@
+.data   
+	# Data in RAM that has't been assigned to.
+	prompt_base: .asciiz "\nEnter the base of the triangle: "
+	prompt_height: .asciiz "\nEnter the height of the triangle: "
+	prompt_lessthan: .asciiz "\nYou cannot enter an integer less than or equal to 0\n "
+	prompt_shorttri: .asciiz "\nYou have inputted a short triangle\n"
+	prompt_talltri: .asciiz "\nYou have inputted a tall triangle\n"
+	prompt_regtri: .asciiz "\nYou have inputted a regular triangle\n"
+	prompt_triarea: .asciiz "\nThe area of your triangle is " 
+	prompt_group: .asciiz "\nAufa Rafiqi Mulyana 1301213231\nMohammad Hanif Aulia Rahman 1301213258\nRadithya Fathi Danadyaksa 1301213332"
+	NewLine: .asciiz "\n"
+.text
+	main : 
+
+		while:
+		
+		jal input
+		beq $s0, 4343, exit
+		beq $s1, 4343, exit
+		jal Calculation
+		jal display
+		
+		j while
+		
+		exit: 
+		li $v0, 4
+		la $a0, prompt_group
+		syscall
+		#End of Program
+		li $v0, 10
+		syscall 
+	input: 
+		# Ask the user for the base of the triangle
+		li $v0, 4
+		la $a0, prompt_base
+		syscall
+		# Input the integer and assign it to $s0
+		li $v0, 5
+		syscall 
+		move $s0, $v0
+		# Check if the input is less than or equal to zero
+		blez $s0, lessthaninput
+		# Ask the user for the height of the triangle
+		li $v0, 4
+		la $a0, prompt_height
+		syscall
+		# Input the integer and assign it to $s1
+		li $v0, 5
+		syscall 
+		move $s1, $v0
+		# Check if the input is less than or equal to zero
+		bltz $s1, lessthaninput
+		add $t1, $s1, $s1
+		sub $t2, $s0, $s1
+		blt $t2, 2, reg_tree
+		bge $s0, $t1, short_tree
+		ble $s0, $t1, tall_tree
+		jr $ra
+		#End of Program
+		li $v0, 10
+		syscall
+		
+	Calculation:
+		mult $s0,$s1
+		mflo $t3
+		div $t4, $t3, 2
+		jr $ra
+		
+	display:
+		li,$v0, 4
+		la $a0, prompt_triarea
+		syscall 
+		li $v0,1
+		move $a0, $t4
+		syscall
+		li $v0, 4
+		la $a0, NewLine
+		syscall
+		
+
+		jr $ra
+		
+		
+		
+	lessthaninput:
+		li $v0, 4
+		la $a0, prompt_lessthan
+		syscall
+		
+		jr $ra
+		 
+	short_tree:
+		li $v0, 4
+		la $a0, prompt_shorttri
+		syscall
+		
+		jr $ra
+	
+	tall_tree:	
+		li $v0, 4
+		la $a0, prompt_talltri
+		syscall
+		
+		jr $ra
+
+	reg_tree:	
+		li $v0, 4
+		la $a0, prompt_regtri
+		syscall
+		
+		jr $ra
